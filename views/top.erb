@@ -1,0 +1,8 @@
+<form action='/new'>
+  <input type="submit" value="追加">
+</form>
+<section>
+  <% @data["memos"].each do |memo| %>
+  <li><a href="/memos/<%= memo["id"] %>"><%= memo["title"] %></a></li>
+  <% end %>
+</section>

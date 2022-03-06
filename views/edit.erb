@@ -1,0 +1,11 @@
+<div>
+  <form action='/memos/<%= @id %>/update' method="POST">
+    <% @data["memos"].each do |memo| %>
+      <% if memo["id"] == @id %>
+        <div><textarea name="title"><%= memo["title"] %></textarea></div>
+        <div><textarea name="content"><%= memo["content"] %></textarea></div>
+      <% end %>
+    <% end %>
+    <div class="form-action"><input type="submit" value="保存"></div>
+  </form>
+</div>
