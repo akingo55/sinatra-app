@@ -38,7 +38,7 @@ get '/memos/:id/edit' do
   erb :edit
 end
 
-post '/memos/:id/update' do
+patch '/memos/:id/update' do
   @id = params['id'].to_i
   data['memos'].each do |memo|
     next if memo['id'] != @id
@@ -53,7 +53,7 @@ post '/memos/:id/update' do
   redirect '/'
 end
 
-post '/memos/:id/delete' do
+delete '/memos/:id/delete' do
   @id = params['id'].to_i
   data['memos'].each do |memo|
     next if memo['id'] != @id
