@@ -13,6 +13,7 @@
       <input type="submit" value="編集" />
     </form>
     <form action="/memos/<%= @id %>/delete" method="POST">
+      <input type="hidden" name="_method" value="DELETE">
       <input type="submit" value="削除" />
     </form>
   </div>
