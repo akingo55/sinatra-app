@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'sinatra'
 require 'sinatra/reloader'
 require 'erb'
 require 'json'
 
-file = "output.json"
+file = 'output.json'
 data = JSON.parse(File.read(file))
 
 get '/' do
@@ -22,12 +24,12 @@ get '/new' do
 end
 
 post '/create' do
-  File.open(file, "w") do |f|
-    count = data["memos"].last["id"] + 1
-    data["memos"] << { "id"=>count, "title"=>params[:title], "content"=>params[:content] }
+  File.open(file, 'w') do |f|
+    count = data['memos'].last['id'] + 1
+    data['memos'] << { 'id' => count, 'title' => params[:title], 'content' => params[:content] }
     f.puts(data.to_json)
   end
-  redirect "/"
+  redirect '/'
 end
 
 get '/memos/:id/edit' do
@@ -38,14 +40,14 @@ end
 
 post '/memos/:id/update' do
   @id = params['id'].to_i
-  data["memos"].each do |memo|
-    next if memo["id"] != @id
+  data['memos'].each do |memo|
+    next if memo['id'] != @id
 
-    memo["title"] = params[:title]
-    memo["content"] = params["content"]
+    memo['title'] = params[:title]
+    memo['content'] = params['content']
   end
 
-  File.open(file, "w") do |f|
+  File.open(file, 'w') do |f|
     f.puts(data.to_json)
   end
   redirect '/'
@@ -53,13 +55,13 @@ end
 
 post '/memos/:id/delete' do
   @id = params['id'].to_i
-  data["memos"].each do |memo|
-  next if memo["id"] != @id
+  data['memos'].each do |memo|
+    next if memo['id'] != @id
 
-  data["memos"].delete(memo)
+    data['memos'].delete(memo)
   end
 
-  File.open(file, "w") do |f|
+  File.open(file, 'w') do |f|
     f.puts(data.to_json)
   end
 
