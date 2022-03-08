@@ -67,3 +67,7 @@ delete '/memos/:id/delete' do
 
   redirect '/'
 end
+
+not_found do
+  '指定したページは存在しません'
+end
