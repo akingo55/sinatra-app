@@ -23,7 +23,7 @@ get '/new' do
   erb :new
 end
 
-post '/create' do
+post '/memos' do
   File.open(file, 'w') do |f|
     count = data['memos'].last['id'] + 1
     data['memos'] << { 'id' => count, 'title' => params[:title], 'content' => params[:content] }
@@ -38,7 +38,7 @@ get '/memos/:id/edit' do
   erb :edit
 end
 
-patch '/memos/:id/update' do
+patch '/memos/:id' do
   @id = params['id'].to_i
   data['memos'].each do |memo|
     next if memo['id'] != @id
@@ -53,7 +53,7 @@ patch '/memos/:id/update' do
   redirect '/'
 end
 
-delete '/memos/:id/delete' do
+delete '/memos/:id' do
   @id = params['id'].to_i
   data['memos'].each do |memo|
     next if memo['id'] != @id
