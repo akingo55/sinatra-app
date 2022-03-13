@@ -1,5 +1,5 @@
 <div>
-  <form action='/memos/<%= @id %>/update' method="POST">
+  <form action='/memos/<%= @id %>' method="POST">
     <% @data["memos"].each do |memo| %>
       <% if memo["id"] == @id %>
         <div><input type="text" name="title" value="<%= memo["title"] %>"></div>
