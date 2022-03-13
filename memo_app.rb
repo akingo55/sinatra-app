@@ -40,12 +40,10 @@ end
 
 patch '/memos/:id' do
   @id = params['id'].to_i
-  data['memos'].each do |memo|
-    next if memo['id'] != @id
+  memo = data['memos'].find { |memo| memo['id'] == @id }
 
-    memo['title'] = params[:title]
-    memo['content'] = params['content']
-  end
+  memo['title'] = params[:title]
+  memo['content'] = params['content']
 
   File.open(file, 'w') do |f|
     f.puts(data.to_json)
@@ -55,11 +53,7 @@ end
 
 delete '/memos/:id' do
   @id = params['id'].to_i
-  data['memos'].each do |memo|
-    next if memo['id'] != @id
-
-    data['memos'].delete(memo)
-  end
+  data['memos'].delete_if { |memo| memo['id'] == @id }
 
   File.open(file, 'w') do |f|
     f.puts(data.to_json)
