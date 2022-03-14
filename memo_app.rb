@@ -15,6 +15,12 @@ def memo_data
   JSON.parse(File.read(FILE))
 end
 
+helpers do
+  def h(text)
+    ERB::Util.html_escape(text)
+  end
+end
+
 get '/' do
   @memo_list = memo_data
   erb :top
@@ -34,7 +40,7 @@ post '/memos' do
   memo_list = memo_data
   File.open(FILE, 'w') do |f|
     count = memo_list['memos'].empty? ? 1 : memo_list['memos'].last['id'].to_i + 1
-    memo_list['memos'] << { id: count, title: params[:title], content: params[:content] }
+    memo_list['memos'] << { id: count, title: h(params[:title]), content: h(params[:content]) }
     f.puts(memo_list.to_json)
   end
   redirect '/'
@@ -51,8 +57,8 @@ patch '/memos/:id' do
   memo_list = memo_data
   memo = memo_list['memos'].find { |hash| hash['id'] == @id }
 
-  memo['title'] = params[:title]
-  memo['content'] = params['content']
+  memo['title'] = h(params[:title])
+  memo['content'] = h(params['content'])
 
   File.open(FILE, 'w') do |f|
     f.puts(memo_list.to_json)
