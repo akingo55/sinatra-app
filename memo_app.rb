@@ -39,7 +39,7 @@ post '/memos' do
   memos = memo_data
   File.open(FILE, 'w') do |f|
     count = memos['memos'].empty? ? 1 : memos['memos'].last['id'].to_i + 1
-    memos['memos'] << { id: count, title: h(params[:title]), content: h(params[:content]) }
+    memos['memos'] << { id: count, title: params[:title], content: params[:content] }
     f.puts(memos.to_json)
   end
   redirect '/'
