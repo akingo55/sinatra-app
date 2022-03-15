@@ -27,8 +27,7 @@ get '/' do
 end
 
 get '/memos/:id' do
-  @id = params['id'].to_i
-  @memos = memo_data
+  @memo = memo_data['memos'].find { |hash| hash['id'] == params['id'].to_i }
   erb :show
 end
 
@@ -47,15 +46,13 @@ post '/memos' do
 end
 
 get '/memos/:id/edit' do
-  @id = params['id'].to_i
-  @memos = memo_data
+  @memo = memo_data['memos'].find { |hash| hash['id'] == params['id'].to_i }
   erb :edit
 end
 
 patch '/memos/:id' do
-  @id = params['id'].to_i
   memos = memo_data
-  memo = memos['memos'].find { |hash| hash['id'] == @id }
+  memo = memos['memos'].find { |hash| hash['id'] == params['id'].to_i }
 
   memo['title'] = h(params[:title])
   memo['content'] = h(params['content'])
@@ -67,9 +64,8 @@ patch '/memos/:id' do
 end
 
 delete '/memos/:id' do
-  @id = params['id'].to_i
   memos = memo_data
-  memos['memos'].delete_if { |memo| memo['id'] == @id }
+  memos['memos'].delete_if { |memo| memo['id'] == params['id'].to_i }
 
   File.open(FILE, 'w') do |f|
     f.puts(memos.to_json)

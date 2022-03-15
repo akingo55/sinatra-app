@@ -1,10 +1,6 @@
 <section>
-  <% @memos["memos"].each do |memo| %>
-  <% if memo["id"] == @id %>
-      <h2><%= memo["title"] %></h2>
-      <p><%= memo["content"] %></p>
-    <% end %>
-  <% end %>
+  <h2><%= @memo["title"] %></h2>
+  <p><%= @memo["content"] %></p>
 </section>
 <section>
 <div class="form-action">
@@ -12,10 +8,10 @@
     <form action="/">
       <input type="submit" value="TOPに戻る" />
     </form>
-    <form action="/memos/<%= @id %>/edit">
+    <form action="/memos/<%= @memo["id"] %>/edit">
       <input type="submit" value="編集" />
     </form>
-    <form action="/memos/<%= @id %>" method="POST">
+    <form action="/memos/<%= @memo["id"] %>" method="POST">
       <input type="hidden" name="_method" value="DELETE">
       <input type="submit" value="削除" />
     </form>
