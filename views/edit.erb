@@ -1,6 +1,6 @@
 <div>
   <form action='/memos/<%= @id %>' method="POST">
-    <% @memo_list["memos"].each do |memo| %>
+    <% @memos["memos"].each do |memo| %>
       <% if memo["id"] == @id %>
         <div><input type="text" name="title" value="<%= memo["title"] %>"></div>
         <div><textarea name="content"><%= memo["content"] %></textarea></div>
