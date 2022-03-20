@@ -54,8 +54,8 @@ patch '/memos/:id' do
   memos = memo_data
   memo = memos['memos'].find { |hash| hash['id'] == params['id'].to_i }
 
-  memo['title'] = h(params[:title])
-  memo['content'] = h(params['content'])
+  memo['title'] = params[:title]
+  memo['content'] = params['content']
 
   File.open(FILE, 'w') do |f|
     f.puts(memos.to_json)
