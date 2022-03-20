@@ -3,6 +3,6 @@
 </form>
 <section>
   <% @memos["memos"].each do |memo| %>
-  <li><a href="/memos/<%= memo["id"] %>"><%= memo["title"] %></a></li>
+  <li><a href="/memos/<%= memo["id"] %>"><%= h(memo["title"]) %></a></li>
   <% end %>
 </section>
