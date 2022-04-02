@@ -6,7 +6,6 @@ require 'erb'
 require 'json'
 require 'pg'
 
-FILE = 'output.json'
 DB_NAME = ENV['DB_NAME']
 TABLE_NAME = ENV['TABLE_NAME']
 
