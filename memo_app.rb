@@ -4,15 +4,15 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'erb'
 require 'json'
+require 'pg'
 
 FILE = 'output.json'
+DB_NAME = ENV['DB_NAME']
+TABLE_NAME = ENV['TABLE_NAME']
 
-def memo_data
-  if File.read(FILE).empty?
-    initial_memo_data = { "memos": [] }
-    File.open(FILE, 'w') { |f| f.puts(initial_memo_data.to_json) }
-  end
-  JSON.parse(File.read(FILE))
+def db(sql)
+  conn = PG.connect(dbname: DB_NAME)
+  conn.exec(sql)
 end
 
 helpers do
@@ -22,12 +22,14 @@ helpers do
 end
 
 get '/' do
-  @memos = memo_data
+  sql = "SELECT * FROM #{TABLE_NAME}"
+  @memos = db(sql)
   erb :top
 end
 
 get '/memos/:id' do
-  @memo = memo_data['memos'].find { |hash| hash['id'] == params['id'].to_i }
+  sql = "SELECT * FROM #{TABLE_NAME} WHERE id = #{params['id']}"
+  @memo = db(sql)
   erb :show
 end
 
@@ -36,41 +38,42 @@ get '/new' do
 end
 
 post '/memos' do
-  memos = memo_data
-  File.open(FILE, 'w') do |f|
-    count = memos['memos'].empty? ? 1 : memos['memos'].last['id'].to_i + 1
-    memos['memos'] << { id: count, title: params[:title], content: params[:content] }
-    f.puts(memos.to_json)
+  index = nil
+  last_id = db("SELECT id from #{TABLE_NAME} order by id desc limit 1")
+  last_id.each do |id|
+    index = id['id'].to_i + 1
   end
+
+  title = params[:title]
+  content = params[:content]
+  format_values = format("%<index>i, '%<title>s', '%<content>s'", index: index, title: title, content: content)
+
+  sql = "INSERT INTO #{TABLE_NAME} (id, title, content) VALUES (#{format_values})"
+  db(sql)
+
   redirect '/'
 end
 
 get '/memos/:id/edit' do
-  @memo = memo_data['memos'].find { |hash| hash['id'] == params['id'].to_i }
+  sql = "SELECT * FROM #{TABLE_NAME} WHERE id = #{params['id']}"
+  @memo = db(sql)
   erb :edit
 end
 
 patch '/memos/:id' do
-  memos = memo_data
-  memo = memos['memos'].find { |hash| hash['id'] == params['id'].to_i }
+  id = params['id']
+  title = params[:title]
+  content = params[:content]
+  format_values = format("'%<title>s', '%<content>s'", title: title, content: content)
+  sql = "UPDATE #{TABLE_NAME} SET (title, content) = (#{format_values}) WHERE id = #{id}"
+  db(sql)
 
-  memo['title'] = params[:title]
-  memo['content'] = params['content']
-
-  File.open(FILE, 'w') do |f|
-    f.puts(memos.to_json)
-  end
   redirect '/'
 end
 
 delete '/memos/:id' do
-  memos = memo_data
-  memos['memos'].delete_if { |memo| memo['id'] == params['id'].to_i }
-
-  File.open(FILE, 'w') do |f|
-    f.puts(memos.to_json)
-  end
-
+  sql = "DELETE FROM #{TABLE_NAME} WHERE id = #{params['id']}"
+  db(sql)
   redirect '/'
 end
 
