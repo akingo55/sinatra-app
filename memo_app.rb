@@ -8,10 +8,16 @@ require 'pg'
 
 DB_NAME = ENV['DB_NAME']
 TABLE_NAME = ENV['TABLE_NAME']
+CONNECTION = PG.connect(
+  host: ENV['DB_HOST'],
+  user: ENV['DB_USER'],
+  password: ENV['DB_PASSWORD'],
+  dbname: DB_NAME,
+  port: ENV['DB_PORT']
+)
 
 def db(sql)
-  conn = PG.connect(dbname: DB_NAME)
-  conn.exec(sql)
+  CONNECTION.exec(sql)
 end
 
 helpers do
@@ -25,7 +31,6 @@ get '/' do
   @memos = db(sql)
   erb :top
 end
-
 get '/memos/:id' do
   sql = "SELECT * FROM #{TABLE_NAME} WHERE id = #{params['id']}"
   @memo = db(sql)
@@ -38,9 +43,9 @@ end
 
 post '/memos' do
   index = nil
-  last_id = db("SELECT id from #{TABLE_NAME} order by id desc limit 1")
+  last_id = db("SELECT count(*) from #{TABLE_NAME}")
   last_id.each do |id|
-    index = id['id'].to_i + 1
+    index = id['count'].to_i + 1
   end
 
   title = params[:title]
