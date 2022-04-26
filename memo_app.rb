@@ -8,17 +8,18 @@ require 'pg'
 
 DB_NAME = ENV['DB_NAME']
 TABLE_NAME = ENV['TABLE_NAME']
-CONNECTION = PG.connect(
-  host: ENV['DB_HOST'],
-  user: ENV['DB_USER'],
-  password: ENV['DB_PASSWORD'],
-  dbname: DB_NAME,
-  port: ENV['DB_PORT']
-)
 
-def db(sql)
-  CONNECTION.exec(sql)
+def client
+  PG.connect(
+    host: ENV['DB_HOST'],
+    user: ENV['DB_USER'],
+    password: ENV['DB_PASSWORD'],
+    dbname: DB_NAME,
+    port: ENV['DB_PORT']
+  )
 end
+
+CONNECTION = client
 
 helpers do
   def h(text)
@@ -28,12 +29,14 @@ end
 
 get '/' do
   sql = "SELECT * FROM #{TABLE_NAME}"
-  @memos = db(sql)
+  @memos = CONNECTION.exec_params(sql)
   erb :top
 end
+
 get '/memos/:id' do
-  sql = "SELECT * FROM #{TABLE_NAME} WHERE id = #{params['id']}"
-  @memo = db(sql)
+  id = params['id']
+  sql = "SELECT * FROM #{TABLE_NAME} WHERE id = $1"
+  @memo = CONNECTION.exec_params(sql, [id])
   erb :show
 end
 
@@ -42,10 +45,11 @@ get '/new' do
 end
 
 post '/memos' do
-  index = nil
-  last_id = db("SELECT count(*) from #{TABLE_NAME}")
+  index = 0
+  sql = "SELECT MAX(id) FROM #{TABLE_NAME}"
+  last_id = CONNECTION.exec_params(sql)
   last_id.each do |id|
-    index = id['count'].to_i + 1
+    index = id['max'].nil? ? 1 : id['max'].to_i + 1
   end
 
   title = params[:title]
@@ -53,14 +57,15 @@ post '/memos' do
   format_values = format("%<index>i, '%<title>s', '%<content>s'", index: index, title: title, content: content)
 
   sql = "INSERT INTO #{TABLE_NAME} (id, title, content) VALUES (#{format_values})"
-  db(sql)
+  CONNECTION.exec_params(sql)
 
   redirect '/'
 end
 
 get '/memos/:id/edit' do
-  sql = "SELECT * FROM #{TABLE_NAME} WHERE id = #{params['id']}"
-  @memo = db(sql)
+  id = params['id']
+  sql = "SELECT * FROM #{TABLE_NAME} WHERE id = $1"
+  @memo = CONNECTION.exec_params(sql, [id])
   erb :edit
 end
 
@@ -69,15 +74,16 @@ patch '/memos/:id' do
   title = params[:title]
   content = params[:content]
   format_values = format("'%<title>s', '%<content>s'", title: title, content: content)
-  sql = "UPDATE #{TABLE_NAME} SET (title, content) = (#{format_values}) WHERE id = #{id}"
-  db(sql)
+  sql = "UPDATE #{TABLE_NAME} SET (title, content) = (#{format_values}) WHERE id = $1"
+  CONNECTION.exec_params(sql, [id])
 
   redirect '/'
 end
 
 delete '/memos/:id' do
-  sql = "DELETE FROM #{TABLE_NAME} WHERE id = #{params['id']}"
-  db(sql)
+  id = params['id']
+  sql = "DELETE FROM #{TABLE_NAME} WHERE id = $1"
+  CONNECTION.exec_params(sql, [id])
   redirect '/'
 end
 
