@@ -11,3 +11,5 @@ gem 'sinatra-contrib'
 gem 'erb'
 # json
 gem 'json'
+# pg
+gem 'pg'

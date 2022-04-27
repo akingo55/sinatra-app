@@ -1,20 +1,24 @@
 <section>
-  <h2><%= h(@memo["title"]) %></h2>
-  <p><%= h(@memo["content"]) %></p>
+  <% @memo.each do |memo| %>
+    <h2><%= h(memo["title"]) %></h2>
+    <p><%= h(memo["content"]) %></p>
+  <% end %>
 </section>
 <section>
 <div class="form-action">
   <div style="display:inline-flex">
-    <form action="/">
-      <input type="submit" value="TOPに戻る" />
-    </form>
-    <form action="/memos/<%= @memo["id"] %>/edit">
-      <input type="submit" value="編集" />
-    </form>
-    <form action="/memos/<%= @memo["id"] %>" method="POST">
-      <input type="hidden" name="_method" value="DELETE">
-      <input type="submit" value="削除" />
-    </form>
+    <% @memo.each do |memo| %>
+      <form action="/">
+        <input type="submit" value="TOPに戻る" />
+      </form>
+      <form action="/memos/<%= memo["id"] %>/edit">
+        <input type="submit" value="編集" />
+      </form>
+      <form action="/memos/<%= memo["id"] %>" method="POST">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="submit" value="削除" />
+      </form>
+    <% end %>
   </div>
 </div>
 </section>
