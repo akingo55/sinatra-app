@@ -1,4 +1,5 @@
 # sinatra-app
+This is the memo app using by sinatra.
 
 ## setup
 1. execute the following command:
@@ -6,17 +7,18 @@
 bundle install
 ```
 
-copy env file and set necessary environment variables
+2. copy env file and set necessary environment variables
 ```bash
 cp ~/.env.sample ~/.env
 ```
 
-source environment variables
+3. source environment variables
 ```bash
 source ~/.env
 ```
 
-run the script
+## execution
+1. run the script
 ```bash
 ruby memo_app.rb
 ```
